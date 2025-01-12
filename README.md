@@ -1,3 +1,13 @@
+# Adding a Heartbeat to the Firehose Client
+
+While implementing the Feed Generator on Heroku I was running into issues where the Firehose Client would silently stop receiving messages. I'd have to restart the server once or twice a day when this happened.
+
+In this fork I added a heartbeat monitor to the `FirehoseClient` class to detect if the client has stopped receiving messages. If the time since the last message exceeds the timeout threshold then the client will be restarted.
+
+Adding the heartbeat monitor to the generator resolved the issue with the silent failures. When the heartbeat monitor triggers the reconnect the client closes its existing connection and will open a new one. The client will resume receiving messages from where it left off.
+
+There is an open issue on the [atproto SDK repo](https://github.com/MarshalX/atproto/issues/489) to add a timeout to the socket connection. So maybe this will be fixed at the SDK level in the future. Since I'm already maintaining my own fork for the feed generator, I decided to implement the solution as a part of the feed generator instead of also maintaining a fork of the SDK. 
+
 # ATProto Feed Generator powered by [The AT Protocol SDK for Python](https://github.com/MarshalX/atproto)
 
 > Feed Generators are services that provide custom algorithms to users through the AT Protocol.
